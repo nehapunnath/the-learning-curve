@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";   // ← Add this
-import EnquiryApi from "../Services/EnquiryApi";
-import AuthApi from "../Services/AuthApi";           // ← Add this
+import EnquiryApi from "../Services/Enquiryapi";
+import AuthApi from "../Services/Authapi";           // ← Add this
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
