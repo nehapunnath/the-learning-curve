@@ -1,7 +1,7 @@
 // Enquiry.jsx
 import React, { useState } from "react";
 import EnquiryApi from "../Services/Enquiryapi";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { Link } from "react-router-dom";
 
 const Enquiry = () => {
@@ -599,6 +599,8 @@ const Enquiry = () => {
           </div>
         </div>
       </div>
+      <ToastContainer position="top-right" autoClose={5000} />
+
     </div>
   );
 };
