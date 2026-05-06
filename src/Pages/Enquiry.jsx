@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import EnquiryApi from "../Services/Enquiryapi";
 import { toast, ToastContainer } from "react-toastify";
 import { Link } from "react-router-dom";
+import "react-toastify/dist/ReactToastify.css";
 
 const Enquiry = () => {
   const [formData, setFormData] = useState({
@@ -69,7 +70,15 @@ const Enquiry = () => {
     console.log("API Response:", result);   // For debugging
 
     if (result.success) {
-      // toast.success("Enquiry submitted successfully! We will contact you soon."), 
+       toast.success("Enquiry submitted successfully! We will contact you soon.", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        }); 
 
       // Reset form
       setFormData({
@@ -599,7 +608,18 @@ const Enquiry = () => {
           </div>
         </div>
       </div>
-      <ToastContainer position="top-right" autoClose={5000} />
+      <ToastContainer 
+       position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+         />
 
     </div>
   );
