@@ -1,5 +1,8 @@
 // Enquiry.jsx
 import React, { useState } from "react";
+import EnquiryApi from "../Services/Enquiryapi";
+import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 
 const Enquiry = () => {
   const [formData, setFormData] = useState({
@@ -46,27 +49,28 @@ const Enquiry = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage({ type: '', text: '' });
+  e.preventDefault();
+  setLoading(true);
+  setMessage({ type: '', text: '' });
 
-    // Simulate form submission without API
-    setTimeout(() => {
-      // Log the form data to console for debugging
-      console.log("Form submitted:", {
-        parentName: formData.name,
-        mobile: formData.mobile,
-        email: formData.email,
-        place: formData.place,
-        message: formData.message,
-        studentName: formData.studentName,
-        studentClass: formData.studentClass,
-        acceptTerms: acceptTerms,
-        acceptNewsletter: acceptNewsletter
-      });
+  try {
+    const result = await EnquiryApi.submitEnquiry({
+      name: formData.name,
+      studentName: formData.studentName,
+      studentClass: formData.studentClass,
+      mobile: formData.mobile,
+      email: formData.email,
+      place: formData.place,
+      message: formData.message,
+      acceptTerms: acceptTerms,
+      acceptNewsletter: acceptNewsletter,
+    });
 
-      setMessage({ type: 'success', text: 'Enquiry submitted successfully! We will get back to you soon.' });
-      
+    console.log("API Response:", result);   // For debugging
+
+    if (result.success) {
+      toast.success("Enquiry submitted successfully! We will contact you soon."), 
+
       // Reset form
       setFormData({
         name: "",
@@ -79,15 +83,23 @@ const Enquiry = () => {
       });
       setAcceptTerms(false);
       setAcceptNewsletter(false);
-      
-      // Clear success message after 5 seconds
-      setTimeout(() => {
-        setMessage({ type: '', text: '' });
-      }, 5000);
-      
-      setLoading(false);
-    }, 1000); // Simulate network delay
-  };
+
+    } else {
+      setMessage({ 
+        type: 'error', 
+        text: result.error || "Failed to submit enquiry" 
+      });
+    }
+  } catch (error) {
+    console.error("Submission error:", error);
+    setMessage({ 
+      type: 'error', 
+      text: "Network error. Please check your connection." 
+    });
+  } finally {
+    setLoading(false);
+  }
+};
 
   // SVG Components
   const ClockIcon = () => (
@@ -180,17 +192,28 @@ const Enquiry = () => {
     </svg>
   );
 
+  const LoginIcon = () => (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+    </svg>
+  );
+
   return (
-    <div className="bg-gradient-to-b from-gray-50 to-gray-100 min-h-screen">
-      {/* HEADER with subtle animation */}
+    <div className="bg-gradient-to-b from-gray-50 to-gray-100 min-h-screen font-['Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,'Helvetica_Neue',Arial,sans-serif]">
+      {/* HEADER with subtle animation and login button */}
       <header className="bg-white/90 backdrop-blur-sm shadow-md border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <GraduationCapIcon />
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-orange-500 bg-clip-text text-transparent">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-orange-500 bg-clip-text text-transparent tracking-tight">
               The Learning Curve
             </h1>
           </div>
+           <Link
+            to="/login" 
+            className="flex items-center text-decoration-none gap-2 px-5 py-2 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:scale-105"
+          >
+            Login
+          </Link>
         </div>
       </header>
 
@@ -205,7 +228,7 @@ const Enquiry = () => {
           </svg>
         </div>
         <div className="max-w-7xl mx-auto px-4 text-center relative z-10">
-          <h2 className="text-4xl md:text-5xl font-bold text-white tracking-wide drop-shadow-md">
+          <h2 className="text-4xl md:text-5xl font-extrabold text-white tracking-wide drop-shadow-md">
             THE LEARNING CURVE
           </h2>
           <p className="text-xl text-orange-100 mt-2 font-medium flex items-center justify-center gap-2">
@@ -314,7 +337,7 @@ const Enquiry = () => {
         <div className="mb-6 text-center lg:text-left">
           <div className="flex items-center justify-center lg:justify-start gap-2 mb-2">
             <GraduationCapIcon />
-            <h2 className="text-2xl md:text-3xl font-bold text-blue-900">
+            <h2 className="text-2xl md:text-3xl font-bold text-blue-900 tracking-tight">
               Enquire about Preschool Admissions in 5 Locations of Bengaluru
             </h2>
           </div>
@@ -389,7 +412,6 @@ const Enquiry = () => {
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="transform transition-all duration-200 focus-within:scale-[1.01]">
                   <label className="block text-gray-700 font-semibold mb-2 text-sm flex items-center gap-2">
-                    <UserIcon />
                     Parent Name <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -406,7 +428,6 @@ const Enquiry = () => {
 
                 <div className="transform transition-all duration-200 focus-within:scale-[1.01]">
                   <label className="block text-gray-700 font-semibold mb-2 text-sm flex items-center gap-2">
-                    <GraduationCapIcon />
                     Student Name <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -423,9 +444,9 @@ const Enquiry = () => {
 
                 <div className="transform transition-all duration-200 focus-within:scale-[1.01]">
                   <label className="block text-gray-700 font-semibold mb-2 text-sm flex items-center gap-2">
-                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {/* <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                    </svg>
+                    </svg> */}
                     Class/Grade <span className="text-red-500">*</span>
                   </label>
                   <select
@@ -453,7 +474,6 @@ const Enquiry = () => {
 
                 <div className="transform transition-all duration-200 focus-within:scale-[1.01]">
                   <label className="block text-gray-700 font-semibold mb-2 text-sm flex items-center gap-2">
-                    <PhoneIcon />
                     Mobile <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -470,7 +490,6 @@ const Enquiry = () => {
 
                 <div className="transform transition-all duration-200 focus-within:scale-[1.01]">
                   <label className="block text-gray-700 font-semibold mb-2 text-sm flex items-center gap-2">
-                    <EnvelopeIcon />
                     Email (Optional)
                   </label>
                   <input
@@ -486,7 +505,6 @@ const Enquiry = () => {
 
                 <div className="transform transition-all duration-200 focus-within:scale-[1.01]">
                   <label className="block text-gray-700 font-semibold mb-2 text-sm flex items-center gap-2">
-                    <LocationIcon />
                     Preferred Location <span className="text-red-500">*</span>
                   </label>
                   <select
@@ -514,7 +532,6 @@ const Enquiry = () => {
 
                 <div className="transform transition-all duration-200 focus-within:scale-[1.01]">
                   <label className="block text-gray-700 font-semibold mb-2 text-sm flex items-center gap-2">
-                    <ChatIcon />
                     Tell us more (Optional)
                   </label>
                   <textarea
@@ -529,7 +546,7 @@ const Enquiry = () => {
                 </div>
 
                 <div className="space-y-3 bg-gradient-to-r from-gray-50 to-orange-50/30 p-4 rounded-xl border border-orange-100">
-                  <label className="flex items-start gap-3 cursor-pointer group">
+                  <label className="flex items-start gap-4 cursor-pointer group">
                     <input
                       type="checkbox"
                       checked={acceptTerms}
@@ -538,12 +555,12 @@ const Enquiry = () => {
                       disabled={loading}
                       className="mt-1 w-4 h-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded transition-all duration-200 group-hover:border-orange-400"
                     />
-                    <span className="text-gray-700 text-sm">
+                    <span className="text-gray-700 text-sm p-2">
                       Accept terms & conditions, receive calls, notifications on WhatsApp
                     </span>
                   </label>
 
-                  <label className="flex items-start gap-3 cursor-pointer group">
+                  <label className="flex items-start gap-4 cursor-pointer group">
                     <input
                       type="checkbox"
                       checked={acceptNewsletter}
@@ -551,7 +568,7 @@ const Enquiry = () => {
                       disabled={loading}
                       className="mt-1 w-4 h-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded transition-all duration-200 group-hover:border-orange-400"
                     />
-                    <span className="text-gray-700 text-sm">
+                    <span className="text-gray-700 text-sm p-2">
                       Hereby accept to send me newsletters for marketing and promotional content
                     </span>
                   </label>
@@ -572,9 +589,7 @@ const Enquiry = () => {
                     </span>
                   ) : (
                     <>
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                      </svg>
+                    
                       Submit
                     </>
                   )}
