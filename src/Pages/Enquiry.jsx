@@ -69,7 +69,7 @@ const Enquiry = () => {
     console.log("API Response:", result);   // For debugging
 
     if (result.success) {
-      toast.success("Enquiry submitted successfully! We will contact you soon."), 
+      // toast.success("Enquiry submitted successfully! We will contact you soon."), 
 
       // Reset form
       setFormData({
