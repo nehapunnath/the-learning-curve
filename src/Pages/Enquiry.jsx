@@ -27,7 +27,7 @@ const Enquiry = () => {
     "Whitefield",
     "E city 1",
     "E city 2",
-    "Jayanagar",
+    // "Jayanagar",
   ];
 
   const classes = [
@@ -245,7 +245,7 @@ const Enquiry = () => {
               </div>
 
               <p className="text-sm text-gray-600 mt-2">
-                Daycare & Preschool Preschool in 6 Locations of Bengaluru, Karnataka
+                Daycare & Preschool Preschool in 4 Locations of Bengaluru, Karnataka
               </p>
 
               <div className="flex flex-wrap gap-1 mt-3">
@@ -330,7 +330,7 @@ const Enquiry = () => {
           <div className="flex items-center justify-center lg:justify-start gap-2 mb-2">
             <GraduationCapIcon />
             <h2 className="text-2xl md:text-3xl font-bold text-blue-900 tracking-tight">
-              Enquire about Preschool Admissions in 5 Locations of Bengaluru
+              Enquire about Preschool Admissions in 4 Locations of Bengaluru
             </h2>
           </div>
           <p className="text-gray-600 text-lg">
