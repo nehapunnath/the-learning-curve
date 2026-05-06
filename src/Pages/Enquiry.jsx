@@ -1,7 +1,7 @@
 // Enquiry.jsx
 import React, { useState } from "react";
 import EnquiryApi from "../Services/Enquiryapi";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -20,6 +20,7 @@ const Enquiry = () => {
   const [acceptNewsletter, setAcceptNewsletter] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const locations = [
     "Indiranagar",
@@ -49,66 +50,48 @@ const Enquiry = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setMessage({ type: '', text: '' });
+ const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage({ type: '', text: '' });
 
-  try {
-    const result = await EnquiryApi.submitEnquiry({
-      name: formData.name,
-      studentName: formData.studentName,
-      studentClass: formData.studentClass,
-      mobile: formData.mobile,
-      email: formData.email,
-      place: formData.place,
-      message: formData.message,
-      acceptTerms: acceptTerms,
-      acceptNewsletter: acceptNewsletter,
-    });
-
-    console.log("API Response:", result);   // For debugging
-
-    if (result.success) {
-       toast.success("Enquiry submitted successfully! We will contact you soon.", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        }); 
-
-      // Reset form
-      setFormData({
-        name: "",
-        mobile: "",
-        email: "",
-        place: "",
-        message: "",
-        studentName: "",
-        studentClass: "",
+    try {
+      const result = await EnquiryApi.submitEnquiry({
+        name: formData.name,
+        studentName: formData.studentName,
+        studentClass: formData.studentClass,
+        mobile: formData.mobile,
+        email: formData.email,
+        place: formData.place,
+        message: formData.message,
+        acceptTerms: acceptTerms,
+        acceptNewsletter: acceptNewsletter,
       });
-      setAcceptTerms(false);
-      setAcceptNewsletter(false);
 
-    } else {
-      setMessage({ 
-        type: 'error', 
-        text: result.error || "Failed to submit enquiry" 
-      });
+      if (result.success) {
+        setShowSuccessModal(true);        // ← Show Modal
+        // Reset form
+        setFormData({
+          name: "", mobile: "", email: "", place: "", message: "",
+          studentName: "", studentClass: ""
+        });
+        setAcceptTerms(false);
+        setAcceptNewsletter(false);
+      } else {
+        setMessage({ type: 'error', text: result.error || "Failed to submit enquiry" });
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+      setMessage({ type: 'error', text: "Network error. Please check your connection." });
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error("Submission error:", error);
-    setMessage({ 
-      type: 'error', 
-      text: "Network error. Please check your connection." 
-    });
-  } finally {
-    setLoading(false);
-  }
-};
+  };
+
+  // Close Success Modal
+  const closeModal = () => {
+    setShowSuccessModal(false);
+  };
 
   // SVG Components
   const ClockIcon = () => (
@@ -608,19 +591,34 @@ const Enquiry = () => {
           </div>
         </div>
       </div>
-      {/* <ToastContainer 
-       position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-         /> */}
+     {showSuccessModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full mx-4 overflow-hidden">
+            <div className="bg-gradient-to-r from-green-500 to-emerald-500 p-8 text-center text-white">
+              <div className="mx-auto w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h2 className="text-2xl font-bold">Thank You!</h2>
+              <p className="mt-2 text-green-100">Your enquiry has been submitted successfully.</p>
+            </div>
 
+            <div className="p-8 text-center">
+              <p className="text-gray-600 leading-relaxed">
+                Our team will contact you shortly.
+              </p>
+
+              <button
+                onClick={closeModal}
+                className="mt-8 w-full py-3.5 bg-gradient-to-r from-orange-600 to-orange-500 text-white font-semibold rounded-2xl hover:shadow-lg transition-all duration-300"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
