@@ -1,7 +1,7 @@
 // Enquiry.jsx
 import React, { useState } from "react";
 import EnquiryApi from "../Services/Enquiryapi";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -608,7 +608,7 @@ const Enquiry = () => {
           </div>
         </div>
       </div>
-      <ToastContainer 
+      {/* <ToastContainer 
        position="top-right"
         autoClose={5000}
         hideProgressBar={false}
@@ -619,7 +619,7 @@ const Enquiry = () => {
         draggable
         pauseOnHover
         theme="light"
-         />
+         /> */}
 
     </div>
   );
